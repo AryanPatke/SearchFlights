@@ -20,7 +20,7 @@ Find the cheapest round-trip flights within a date window by scanning Google Fli
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/aryanpatke/SearchFlights.git && cd SearchFlights
+git clone https://github.com/AryanPatke/SearchFlights.git && cd SearchFlights
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
