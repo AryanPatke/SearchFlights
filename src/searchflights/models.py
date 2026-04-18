@@ -25,7 +25,7 @@ class SearchQuery(BaseModel):
         default=None, description="None means any number of stops"
     )
     sort_by: Literal["price", "date", "duration", "stops"] = "price"
-    output_format: Literal["table", "json"] = "table"
+    output_format: Literal["table", "json"] = "json"
 
 
 class SearchLeg(BaseModel):
