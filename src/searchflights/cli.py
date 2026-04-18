@@ -57,7 +57,9 @@ def _parse_stops(raw: str) -> int | None:
 @click.option("--destination", default=None, help="IATA arrival airport code. Omit to scan popular destinations.")
 @click.option("--window", required=True, help="Date range as YYYY-MM-DD:YYYY-MM-DD.")
 @click.option("--top-n", default=5, show_default=True, type=int, help="Number of cheapest results to return.")
-@click.option("--trip-duration", default=10, show_default=True, type=int, help="Return-trip length in days.")
+@click.option("--trip-duration-min", default=7, show_default=True, type=int, help="Minimum return-trip length in days.")
+@click.option("--trip-duration-max", default=10, show_default=True, type=int, help="Maximum return-trip length in days.")
+@click.option("--date-step", default=None, type=int, help="Days between each departure search (default: from config, usually 2).")
 @click.option("--currency", default="INR", show_default=True, help="ISO 4217 currency code.")
 @click.option("--stops", default="any", show_default=True, help="Max stops: 0, 1, 2, or 'any'.")
 @click.option("--sort", "sort_by", default="price", show_default=True, type=click.Choice(["price", "date", "duration", "stops"]))
@@ -70,7 +72,9 @@ def main(
     destination: str | None,
     window: str,
     top_n: int,
-    trip_duration: int,
+    trip_duration_min: int,
+    trip_duration_max: int,
+    date_step: int | None,
     currency: str,
     stops: str,
     sort_by: str,
@@ -88,6 +92,12 @@ def main(
     window_start, window_end = _parse_window(window)
     max_stops = _parse_stops(stops)
 
+    if trip_duration_min > trip_duration_max:
+        raise click.BadParameter(
+            f"--trip-duration-min ({trip_duration_min}) cannot exceed "
+            f"--trip-duration-max ({trip_duration_max})"
+        )
+
     destinations: list[str] = []
     if destination:
         destinations = [d.strip().upper() for d in destination.split(",")]
@@ -97,7 +107,8 @@ def main(
         destinations=destinations,
         window_start=window_start,
         window_end=window_end,
-        trip_duration=trip_duration,
+        trip_duration_min=trip_duration_min,
+        trip_duration_max=trip_duration_max,
         top_n=top_n,
         currency=currency,
         max_stops=max_stops,
@@ -105,11 +116,11 @@ def main(
         output_format=output_format,
     )
 
-    asyncio.run(_run(query, output_file))
+    asyncio.run(_run(query, output_file, date_step))
 
 
-async def _run(query: SearchQuery, output_file: str | None = None) -> None:
-    legs = plan_search(query)
+async def _run(query: SearchQuery, output_file: str | None = None, date_step: int | None = None) -> None:
+    legs = plan_search(query, date_step_override=date_step)
     logger.info("Planned %d search legs.", len(legs))
 
     all_fares = []

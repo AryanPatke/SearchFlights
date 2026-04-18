@@ -16,7 +16,8 @@ def sample_query() -> SearchQuery:
         destinations=["CDG", "BKK"],
         window_start=date(2026, 6, 1),
         window_end=date(2026, 12, 31),
-        trip_duration=10,
+        trip_duration_min=7,
+        trip_duration_max=10,
         top_n=5,
         currency="INR",
     )

@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     proxy_url: str | None = None
     headless: bool = True
 
-    date_step_days: int = 7
+    date_step_days: int = 2
 
     @cached_property
     def default_destinations(self) -> list[str]:

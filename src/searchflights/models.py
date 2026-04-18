@@ -18,7 +18,8 @@ class SearchQuery(BaseModel):
     )
     window_start: date
     window_end: date
-    trip_duration: int = Field(default=10, ge=1, le=90)
+    trip_duration_min: int = Field(default=7, ge=1, le=90)
+    trip_duration_max: int = Field(default=10, ge=1, le=90)
     top_n: int = Field(default=5, ge=1, le=50)
     currency: str = Field(default="INR", min_length=3, max_length=3)
     max_stops: int | None = Field(

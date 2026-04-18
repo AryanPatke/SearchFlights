@@ -11,7 +11,8 @@ Find the cheapest round-trip flights within a date window by scanning Google Fli
 - Scans Google Flights via headless Playwright browser for real, up-to-date fares.
 - Searches across **multiple destinations** in a single run when no specific destination is given.
 - Returns the **top-N cheapest round-trip flights** within your date window, sorted by price.
-- Configurable trip duration, currency, max stops, and sort order.
+- **Flexible return window** (e.g., 7-10 day trips) -- searches both endpoints to find the cheapest combination.
+- Configurable date step, currency, max stops, and sort order.
 - Output as a **Rich terminal table** or **structured JSON** -- optionally saved to a file.
 - Includes a direct **booking link** for each result so you can go straight to Google Flights.
 - Built with async Playwright, Pydantic models, and Click CLI for a clean, extensible codebase.
@@ -53,7 +54,9 @@ python3 -m searchflights \
 | `--destination` | IATA arrival airport code | Scans default list |
 | `--window` | `YYYY-MM-DD:YYYY-MM-DD` date range | -- |
 | `--top-n` | Number of cheapest results to return | `5` |
-| `--trip-duration` | Return-trip length in days | `10` |
+| `--trip-duration-min` | Minimum return-trip length in days | `7` |
+| `--trip-duration-max` | Maximum return-trip length in days | `10` |
+| `--date-step` | Days between each departure search | `2` (from config) |
 | `--currency` | ISO 4217 currency code | `INR` |
 | `--stops` | Max stops: `0`, `1`, `2`, or `any` | `any` |
 | `--sort` | Sort key: `price`, `date`, `duration`, `stops` | `price` |
