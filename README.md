@@ -11,7 +11,7 @@ Find the cheapest round-trip flights within a date window by scanning Google Fli
 - Scans Google Flights via headless Playwright browser for real, up-to-date fares.
 - Searches across **multiple destinations** in a single run when no specific destination is given.
 - Returns the **top-N cheapest round-trip flights** within your date window, sorted by price.
-- **Flexible return window** (e.g., 7-10 day trips) -- searches both endpoints to find the cheapest combination.
+- Defaults to checking both 7-day and 10-day round trips; use `--trip-days` for an exact trip length.
 - Configurable date step, currency, max stops, and sort order.
 - Output as a **Rich terminal table** or **structured JSON** -- optionally saved to a file.
 - Includes a direct **booking link** for each result so you can go straight to Google Flights.
@@ -44,6 +44,16 @@ python3 -m searchflights \
     --top-n 5 \
     --format table \
     --output results.json
+
+# Shorter trip example: exact 4-day return trip
+python3 -m searchflights \
+    --origin BOM \
+    --destination MLE \
+    --window 2026-05-01:2026-05-31 \
+    --trip-days 4 \
+    --stops 0 \
+    --format json \
+    --output results.json
 ```
 
 ## CLI Options
@@ -54,8 +64,7 @@ python3 -m searchflights \
 | `--destination` | IATA arrival airport code | Scans default list |
 | `--window` | `YYYY-MM-DD:YYYY-MM-DD` date range | -- |
 | `--top-n` | Number of cheapest results to return | `5` |
-| `--trip-duration-min` | Minimum return-trip length in days | `7` |
-| `--trip-duration-max` | Maximum return-trip length in days | `10` |
+| `--trip-days` | Exact return-trip length in days. Example: `--trip-days 4` means depart May 4, return May 8 | Checks both `7` and `10` day trips |
 | `--date-step` | Days between each departure search | `2` (from config) |
 | `--currency` | ISO 4217 currency code | `INR` |
 | `--stops` | Max stops: `0`, `1`, `2`, or `any` | `any` |

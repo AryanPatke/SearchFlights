@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import date, timedelta
+from datetime import date
 
 import click
 
@@ -46,6 +46,13 @@ def _parse_stops(raw: str) -> int | None:
     return val
 
 
+def _resolve_trip_durations(trip_days: int | None) -> tuple[int, int]:
+    """Return the default duration range or an exact user-provided duration."""
+    if trip_days is None:
+        return 7, 10
+    return trip_days, trip_days
+
+
 @click.command(
     help=(
         "Find the cheapest round-trip flights within a date window.\n\n"
@@ -57,8 +64,7 @@ def _parse_stops(raw: str) -> int | None:
 @click.option("--destination", default=None, help="IATA arrival airport code. Omit to scan popular destinations.")
 @click.option("--window", required=True, help="Date range as YYYY-MM-DD:YYYY-MM-DD.")
 @click.option("--top-n", default=5, show_default=True, type=int, help="Number of cheapest results to return.")
-@click.option("--trip-duration-min", default=7, show_default=True, type=int, help="Minimum return-trip length in days.")
-@click.option("--trip-duration-max", default=10, show_default=True, type=int, help="Maximum return-trip length in days.")
+@click.option("--trip-days", default=None, type=click.IntRange(1, 90), help="Exact return-trip length in days (default: search 7- and 10-day trips).")
 @click.option("--date-step", default=None, type=int, help="Days between each departure search (default: from config, usually 2).")
 @click.option("--currency", default="INR", show_default=True, help="ISO 4217 currency code.")
 @click.option("--stops", default="any", show_default=True, help="Max stops: 0, 1, 2, or 'any'.")
@@ -72,8 +78,7 @@ def main(
     destination: str | None,
     window: str,
     top_n: int,
-    trip_duration_min: int,
-    trip_duration_max: int,
+    trip_days: int | None,
     date_step: int | None,
     currency: str,
     stops: str,
@@ -91,12 +96,7 @@ def main(
 
     window_start, window_end = _parse_window(window)
     max_stops = _parse_stops(stops)
-
-    if trip_duration_min > trip_duration_max:
-        raise click.BadParameter(
-            f"--trip-duration-min ({trip_duration_min}) cannot exceed "
-            f"--trip-duration-max ({trip_duration_max})"
-        )
+    trip_duration_min, trip_duration_max = _resolve_trip_durations(trip_days)
 
     destinations: list[str] = []
     if destination:
